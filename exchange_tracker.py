@@ -21,15 +21,15 @@ def transact(zen, rate):
     if (rate < 0):
         # Dilithium rate cannot be negative
         return False
-    elif zen == 0:
-        # nothing happens, but it still succeeds
-        return True
 
     dil = -(zen * rate)
-
     best = 0
     extra = 0
-    if zen < 0:
+
+    if zen == 0:
+        # nothing happens, but it still succeeds
+        return True
+    elif zen < 0:
         # we are selling zen
         if (not zen_store) or (zen == 0):
             dil_store[rate] += dil
@@ -70,10 +70,6 @@ def transact(zen, rate):
         dil_store[best] += dil
         if not dil_store[best]:
             del dil_store[best]
-
-    else:
-        # I don't know what this means, but I can't handle it
-        return False
 
     transact(extra, rate)
     return True
