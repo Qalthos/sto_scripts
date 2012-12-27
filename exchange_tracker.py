@@ -75,15 +75,14 @@ def transact(zen, rate):
     return True
 
 if __name__ == "__main__":
-    data_file = os.path.join(os.path.split(__file__)[0], 'data.json')
+    data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
     if os.path.exists(data_file):
         # Load data contents to dictionaries
-        with open(data_file) as data_json:
-            data = json.load(data_json)
-            for key in data['zen']:
-                zen_store[int(key)] = data['zen'][key]
-            for key in data['dil']:
-                dil_store[int(key)] = data['dil'][key]
+        with open(data_file) as data_csv:
+            data_csv.next()
+            for line in data_csv:
+                zen, dil = line.split(',')
+                transact(int(zen), int(dil))
     try:
         while True:
             curr = 0
@@ -104,11 +103,12 @@ if __name__ == "__main__":
                 rate = int(raw_input("How much dil per zen? "))
             except ValueError:
                 continue
-            if not transact(zen, rate):
+            if transact(zen, rate):
+                with open(data_file, 'a') as data_csv:
+                    data_csv.write('%d,%d\n' % (zen, rate))
+            else:
                 print("That didn't work")
     except KeyboardInterrupt:
         print()
         print(zen_store)
         print(dil_store)
-        with open(data_file, 'w') as data_json:
-            json.dump(dict(zen=zen_store, dil=dil_store), data_json)
