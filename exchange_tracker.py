@@ -16,6 +16,12 @@ from collections import defaultdict
 zen_store = defaultdict(int)
 dil_store = defaultdict(int)
 
+# For Python 2.x & 3.x coexistence
+try:
+    input = raw_input
+except:
+    pass
+
 def transact(zen, rate):
     if (rate < 0):
         # Dilithium rate cannot be negative
@@ -78,7 +84,7 @@ if __name__ == "__main__":
     if os.path.exists(data_file):
         # Load data contents to dictionaries
         with open(data_file) as data_csv:
-            data_csv.next()
+            next(data_csv)
             for line in data_csv:
                 zen, dil = line.split(',')
                 transact(int(zen), int(dil))
@@ -98,8 +104,8 @@ if __name__ == "__main__":
                     total += float(dil)/float(rate)
             print("%d dilithium @ %f" % (curr, curr/total if not total == 0 else 0))
             try:
-                zen = int(raw_input("How much zen? "))
-                rate = int(raw_input("How much dil per zen? "))
+                zen = int(input("How much zen? "))
+                rate = int(input("How much dil per zen? "))
             except ValueError:
                 continue
             if transact(zen, rate):
