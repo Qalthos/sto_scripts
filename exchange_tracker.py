@@ -11,7 +11,6 @@
 from __future__ import division
 
 import os
-import json
 from collections import defaultdict
 
 zen_store = defaultdict(int)
