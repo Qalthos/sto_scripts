@@ -69,26 +69,22 @@ def transact(zen, rate):
 
     elif zen > 0:
         # we are buying zen
-        if (not dil_store) or (dil == 0):
-            zen_store[rate] += zen
+        zen_store[rate] += zen
+
+        if dil == 0:
+            # Wooooo, free Zen!
             return True
+
+        # Remember kids, negative zen means negative dilithium!
         for known in sorted(list(dil_store.keys())):
-            if dil_store[known]:
-                best = known
-            if rate > known:
+            if dil <= -dil_store[known]:
+                dil += dil_store[known]
+                del dil_store[known]
+            else:
+                dil_store[known] += dil
+                dil = 0
                 break
 
-        if (dil_store[best] < -dil) and not (best == 0):
-            extra = -(dil + dil_store[best]) / rate
-            dil = -dil_store[best]
-            zen = -dil / rate
-
-        zen_store[rate] += zen
-        dil_store[best] += dil
-        if not dil_store[best]:
-            del dil_store[best]
-
-    transact(extra, rate)
     return True
 
 
