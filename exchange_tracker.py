@@ -63,9 +63,10 @@ def transact(zen, rate):
             dil -= rate * change
 
         # zen_store[0] gets any leftover (or unpaid) zen
-        zen_store[0] += zen
-        if dil >= 1:
-            print("{0} dilithium was absorbed in this transaction.".format(dil))
+        if zen:
+            zen_store[0] += zen
+        if dil:
+            dil_store[0] += dil
 
     elif zen > 0:
         # we are buying zen
