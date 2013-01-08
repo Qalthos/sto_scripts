@@ -36,24 +36,36 @@ def transact(zen, rate):
         return True
     elif zen < 0:
         # we are selling zen
-        if (not zen_store) or (zen == 0):
-            dil_store[rate] += dil
-            return True
-        for known in sorted(list(zen_store.keys())):
-            if rate < known:
-                break
-            if zen_store[known]:
-                best = known
-
-        if (zen_store[best] < -zen) and not (best == 0):
-            extra = zen + zen_store[best]
-            zen = -zen_store[best]
-            dil = -zen * rate
-
-        zen_store[best] += zen
-        if not zen_store[best]:
-            del zen_store[best]
         dil_store[rate] += dil
+        
+        if (not zen_store):
+            return True
+        
+        # Remove (whole number) zen from each bucket until no more dilithium
+        # is left to buy with
+        for known in sorted(list(zen_store.keys()), reverse=True):
+            if dil > known:
+                if dil > known * zen_store[known]:
+                    dil -= known * zen_store[known]
+                    zen += zen_store[known]
+                    del zen_store[known]
+                else:
+                    change = dil / known
+                    dil -= change * known
+                    zen += change
+                    zen_store[known] -= change
+            if zen >= 0 or dil == 0:
+                break
+        if dil > rate:
+            change = dil / rate
+            zen += change
+            zen_store[0] -= change
+            dil -= rate * change
+
+        # zen_store[0] gets any leftover (or unpaid) zen
+        zen_store[0] += zen
+        if dil >= 1:
+            print("{0} dilithium was absorbed in this transaction.".format(dil))
 
     elif zen > 0:
         # we are buying zen
