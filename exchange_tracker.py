@@ -79,6 +79,15 @@ def transact(zen, rate):
     transact(extra, rate)
     return True
 
+
+def print_stores():
+    for name, store in [('zen', zen_store), ('dil', dil_store)]:
+        string = name + ': '
+        for key in sorted(store):
+            string += "(%d, %d), " % (key, store[key])
+        print(string)
+
+
 if __name__ == "__main__":
     data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
     if os.path.exists(data_file):
@@ -90,6 +99,7 @@ if __name__ == "__main__":
                 transact(int(zen), int(dil))
     try:
         while True:
+            print_stores()
             curr = 0
             total = 0
             for rate, zen in zen_store.items():
@@ -115,5 +125,3 @@ if __name__ == "__main__":
                 print("That didn't work")
     except KeyboardInterrupt:
         print()
-        print(zen_store)
-        print(dil_store)
