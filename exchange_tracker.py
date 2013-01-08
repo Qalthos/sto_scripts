@@ -23,24 +23,19 @@ except:
     pass
 
 def transact(zen, rate):
-    if (rate < 0):
+    if (rate < 0) or (zen == 0):
         # Dilithium rate cannot be negative
         return False
 
     dil = -(zen * rate)
-    best = 0
-    extra = 0
 
-    if zen == 0:
-        # nothing happens, but it still succeeds
-        return True
-    elif zen < 0:
+    if zen < 0:
         # we are selling zen
         dil_store[rate] += dil
-        
+
         if (not zen_store):
             return True
-        
+
         # Remove (whole number) zen from each bucket until no more dilithium
         # is left to buy with
         for known in sorted(list(zen_store.keys()), reverse=True):
@@ -127,10 +122,12 @@ if __name__ == "__main__":
                 rate = int(input("How much dil per zen? "))
             except ValueError:
                 continue
+
             if transact(zen, rate):
                 with open(data_file, 'a') as data_csv:
                     data_csv.write('%d,%d\n' % (zen, rate))
             else:
                 print("That didn't work")
+
     except KeyboardInterrupt:
         print()
