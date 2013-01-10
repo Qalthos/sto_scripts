@@ -85,11 +85,13 @@ def transact(zen, rate):
 
 
 def print_stores():
+    strings = []
     for name, store in [('zen', zen_store), ('dil', dil_store)]:
-        string = name + ': '
+        details = []
         for key in sorted(store):
-            string += "(%d, %d), " % (key, store[key])
-        print(string)
+            details.append("(%d, %d)" % (key, store[key]))
+        strings. append(name + ': ' + ', '.join(details))
+    return '\n'.join(strings)
 
 
 if __name__ == "__main__":
@@ -103,7 +105,7 @@ if __name__ == "__main__":
                 transact(int(zen), int(dil))
     try:
         while True:
-            print_stores()
+            print(print_stores())
             curr = 0
             total = 0
             for rate, zen in zen_store.items():
