@@ -94,8 +94,7 @@ def print_stores():
     return '\n'.join(strings)
 
 
-if __name__ == "__main__":
-    data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
+def load_history(data_file):
     if os.path.exists(data_file):
         # Load data contents to dictionaries
         with open(data_file) as data_csv:
@@ -103,6 +102,11 @@ if __name__ == "__main__":
             for line in data_csv:
                 zen, dil = line.split(',')
                 transact(int(zen), int(dil))
+
+
+if __name__ == "__main__":
+    data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
+    load_history(data_file)
     try:
         while True:
             print(print_stores())
