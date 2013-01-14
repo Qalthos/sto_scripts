@@ -11,7 +11,7 @@ class ExchangeWin(Gtk.Window):
         self.zen = Gtk.Entry()
         rate_label = Gtk.Label('Dil per Zen:')
         self.rate = Gtk.Entry()
-        self.go = Gtk.Button()
+        self.go = Gtk.Button('Transact!')
 
         split = Gtk.Box(homogeneous=True)
         rsplit = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
