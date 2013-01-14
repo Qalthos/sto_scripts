@@ -2,6 +2,8 @@
 
 from gi.repository import Gtk
 
+from exchange_tracker import load_history, transact, print_stores
+
 class ExchangeWin(Gtk.Window):
     def __init__(self):
         super(ExchangeWin, self).__init__()
@@ -34,7 +36,10 @@ class ExchangeWin(Gtk.Window):
 
 
 if __name__ == "__main__":
+    data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
+    zen_store, dil_store = load_history(data_file)
     win = ExchangeWin()
+    win.current.set_text(print_stores(zen_store, dil_store))
     win.connect("delete-event", Gtk.main_quit)
     Gtk.main()
 
