@@ -13,8 +13,6 @@ from __future__ import division
 import os
 from collections import defaultdict
 
-zen_store = defaultdict(int)
-dil_store = defaultdict(int)
 
 # For Python 2.x & 3.x coexistence
 try:
@@ -22,10 +20,10 @@ try:
 except:
     pass
 
-def transact(zen, rate):
+def transact(zen_store, zen, dil_store, rate):
     if (rate < 0) or (zen == 0):
         # Dilithium rate cannot be negative
-        return False
+        return (zen_store, dil_store)
 
     dil = -(zen * rate)
 
@@ -34,7 +32,7 @@ def transact(zen, rate):
         dil_store[rate] += dil
 
         if (not zen_store):
-            return True
+            return (zen_store, dil_store)
 
         # Remove (whole number) zen from each bucket until no more dilithium
         # is left to buy with
@@ -69,7 +67,7 @@ def transact(zen, rate):
 
         if dil == 0:
             # Wooooo, free Zen!
-            return True
+            return (zen_store, dil_store)
 
         # Remember kids, negative zen means negative dilithium!
         for known in sorted(list(dil_store.keys())):
@@ -81,10 +79,10 @@ def transact(zen, rate):
                 dil = 0
                 break
 
-    return True
+    return (zen_store, dil_store)
 
 
-def print_stores():
+def print_stores(zen_store, dil_store):
     strings = []
     for name, store in [('zen', zen_store), ('dil', dil_store)]:
         details = []
@@ -95,13 +93,16 @@ def print_stores():
 
 
 def load_history(data_file):
+    zen_store = defaultdict(int)
+    dil_store = defaultdict(int)
     if os.path.exists(data_file):
         # Load data contents to dictionaries
         with open(data_file) as data_csv:
             next(data_csv)
             for line in data_csv:
                 zen, dil = line.split(',')
-                transact(int(zen), int(dil))
+                zen_store, dil_store = transact(zen_store, int(zen), dil_store, int(dil))
+    return (zen_store, dil_store)
 
 
 if __name__ == "__main__":
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     load_history(data_file)
     try:
         while True:
-            print(print_stores())
+            print(print_stores(zen_store, dil_store))
             curr = 0
             total = 0
             for rate, zen in zen_store.items():
@@ -129,11 +130,9 @@ if __name__ == "__main__":
             except ValueError:
                 continue
 
-            if transact(zen, rate):
-                with open(data_file, 'a') as data_csv:
-                    data_csv.write('%d,%d\n' % (zen, rate))
-            else:
-                print("That didn't work")
+            zen_store, dil_store = transact(zen_store, zen, dil_store, rate)
+            with open(data_file, 'a') as data_csv:
+                data_csv.write('%d,%d\n' % (zen, rate))
 
     except KeyboardInterrupt:
         print()
