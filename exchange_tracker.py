@@ -12,6 +12,7 @@ from __future__ import division
 
 import os
 from collections import defaultdict
+from datetime import date
 
 zen_store = defaultdict(int)
 dil_store = defaultdict(int)
@@ -99,7 +100,7 @@ if __name__ == "__main__":
         with open(data_file) as data_csv:
             next(data_csv)
             for line in data_csv:
-                zen, dil = line.split(',')
+                zen, dil = line.split(',')[0:2]
                 transact(int(zen), int(dil))
     try:
         while True:
@@ -125,7 +126,8 @@ if __name__ == "__main__":
 
             if transact(zen, rate):
                 with open(data_file, 'a') as data_csv:
-                    data_csv.write('%d,%d\n' % (zen, rate))
+                    today = date.today().isoformat()
+                    data_csv.write('%d,%d,%s\n' % (zen, rate, today))
             else:
                 print("That didn't work")
 
