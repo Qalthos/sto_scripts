@@ -23,7 +23,7 @@ try:
 except:
     pass
 
-def transact(zen, rate):
+def transact_simple(zen, rate):
     if (rate < 0) or (zen == 0):
         # Dilithium rate cannot be negative
         return False
@@ -84,6 +84,64 @@ def transact(zen, rate):
 
     return True
 
+    
+def transact_strict(zen, rate):
+    if (rate < 0):
+        # Dilithium rate cannot be negative
+        return False
+
+    dil = -(zen * rate)
+    best = 0
+    extra = 0
+
+    if zen == 0:
+        # nothing happens, but it still succeeds
+        return True
+    elif zen < 0:
+        # we are selling zen
+        if (not zen_store) or (zen == 0):
+            dil_store[rate] += dil
+            return True
+        for known in sorted(list(zen_store.keys())):
+            if rate < known:
+                break
+            if zen_store[known]:
+                best = known
+
+        if (zen_store[best] < -zen) and not (best == 0):
+            extra = zen + zen_store[best]
+            zen = -zen_store[best]
+            dil = -zen * rate
+
+        zen_store[best] += zen
+        if not zen_store[best]:
+            del zen_store[best]
+        dil_store[rate] += dil
+
+    elif zen > 0:
+        # we are buying zen
+        if (not dil_store) or (dil == 0):
+            zen_store[rate] += zen
+            return True
+        for known in sorted(list(dil_store.keys())):
+            if dil_store[known]:
+                best = known
+            if rate > known:
+                break
+
+        if (dil_store[best] < -dil) and not (best == 0):
+            extra = -(dil + dil_store[best]) / rate
+            dil = -dil_store[best]
+            zen = -dil / rate
+
+        zen_store[rate] += zen
+        dil_store[best] += dil
+        if not dil_store[best]:
+            del dil_store[best]
+
+    transact(extra, rate)
+    return True
+
 
 def print_stores():
     for name, store in [('zen', zen_store), ('dil', dil_store)]:
@@ -95,6 +153,7 @@ def print_stores():
 
 if __name__ == "__main__":
     data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
+    transact = transact_simple
     if os.path.exists(data_file):
         # Load data contents to dictionaries
         with open(data_file) as data_csv:
