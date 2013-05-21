@@ -124,10 +124,10 @@ def transact_strict(zen, rate):
             zen_store[rate] += zen
             return True
         for known in sorted(list(dil_store.keys())):
-            if dil_store[known]:
-                best = known
             if rate > known:
                 break
+            if dil_store[known]:
+                best = known
 
         if (dil_store[best] < -dil) and not (best == 0):
             extra = -(dil + dil_store[best]) / rate
