@@ -24,7 +24,7 @@ except:
     pass
 
 def transact_simple(zen, rate):
-    if (rate < 0) or (zen == 0):
+    if (rate < 0):
         # Dilithium rate cannot be negative
         return False
 
