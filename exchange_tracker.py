@@ -46,14 +46,14 @@ def transact_simple(zen, rate):
                     zen += zen_store[known]
                     del zen_store[known]
                 else:
-                    change = dil / known
+                    change = dil // known
                     dil -= change * known
                     zen += change
                     zen_store[known] -= change
             if zen >= 0 or dil == 0:
                 break
         if dil > rate:
-            change = dil / rate
+            change = dil // rate
             zen += change
             zen_store[0] -= change
             dil -= rate * change
@@ -130,9 +130,9 @@ def transact_strict(zen, rate):
                 best = known
 
         if (dil_store[best] < -dil) and not (best == 0):
-            extra = -(dil + dil_store[best]) / rate
+            extra = -(dil + dil_store[best]) // rate
             dil = -dil_store[best]
-            zen = -dil / rate
+            zen = -dil // rate
 
         zen_store[rate] += zen
         dil_store[best] += dil
