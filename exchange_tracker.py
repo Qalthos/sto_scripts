@@ -13,6 +13,7 @@ from __future__ import division
 import os
 from collections import defaultdict
 from datetime import date
+from operator import mul, floordiv as div
 
 zen_store = defaultdict(int)
 dil_store = defaultdict(int)
@@ -148,27 +149,18 @@ def transact_strict(zen, rate):
 
 
 def print_stores():
-    for name, store in [('zen', zen_store), ('dil', dil_store)]:
+    for name, store, func in [('zen', zen_store, mul), ('dil', dil_store, div)]:
         stored_value = map(lambda key: str((key, store[key])), sorted(store))
         print(name + ': ' + ' '.join(stored_value))
 
-    total_zen = sum(zen_store.values())
-    dil_value = sum(map(lambda rate: zen_store[rate] * rate,
-                        filter(lambda rate: rate != 0, zen_store)))
+        total = sum(store.values())
+        value = sum(map(lambda rate: func(store[rate], rate),
+                        filter(lambda rate: rate != 0, store)))
 
-    total_dil = sum(dil_store.values())
-    zen_value = sum(map(lambda rate: dil_store[rate] // rate,
-                        filter(lambda rate: rate != 0, dil_store)))
-
-    if total_zen == 0 or dil_value == 0:
-        print("{} dilithium @ 0 each".format(total_zen))
-    else:
-        print("{} Zen @ {} each".format(total_zen, dil_value / total_zen))
-
-    if total_dil == 0 or zen_value == 0:
-        print("{} dilithium @ 0 per Zen".format(total_dil))
-    else:
-        print("{} dilithium @ {} per Zen".format(total_dil, total_dil /zen_value))
+        if total == 0 or value == 0:
+            print("{} {}".format(total, name))
+        else:
+            print("{} {} @ {} each".format(total, name, value / total))
 
 
 if __name__ == "__main__":
