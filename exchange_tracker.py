@@ -149,18 +149,18 @@ def transact_strict(zen, rate):
 
 
 def print_stores():
-    for name, store, func in [('zen', zen_store, mul), ('dil', dil_store, div)]:
-        stored_value = map(lambda key: str((key, store[key])), sorted(store))
-        print(name + ': ' + ' '.join(stored_value))
-
+    for name, store, func in [('Zen', zen_store, mul),
+                              ('dilithium', dil_store, div)]:
         total = sum(store.values())
         value = sum(map(lambda rate: func(store[rate], rate),
                         filter(lambda rate: rate != 0, store)))
+        stored_value = map(lambda key: str((key, store[key])), sorted(store))
 
         if total == 0 or value == 0:
             print("{} {}".format(total, name))
         else:
             print("{} {} @ {} each".format(total, name, value / total))
+        print(' '.join(stored_value))
 
 
 if __name__ == "__main__":
