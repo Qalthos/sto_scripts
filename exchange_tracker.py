@@ -145,10 +145,8 @@ def transact_strict(zen, rate):
 
 def print_stores():
     for name, store in [('zen', zen_store), ('dil', dil_store)]:
-        string = name + ': '
-        for key in sorted(store):
-            string += "(%d, %d), " % (key, store[key])
-        print(string)
+        stored_value = map(lambda key: str((key, store[key])), sorted(store))
+        print(name + ': ' + ' '.join(stored_value))
 
 
 if __name__ == "__main__":
