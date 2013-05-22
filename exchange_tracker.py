@@ -148,6 +148,20 @@ def print_stores():
         stored_value = map(lambda key: str((key, store[key])), sorted(store))
         print(name + ': ' + ' '.join(stored_value))
 
+    curr = 0
+    total = 0
+    for rate, zen in zen_store.items():
+        curr += float(zen)
+        total += float(rate)*float(zen)
+    print("%d Zen @ %f" % (curr, total/curr if not curr == 0 else 0))
+    curr = 0
+    total = 0
+    for rate, dil in dil_store.items():
+        curr += float(dil)
+        if not float(rate) == 0:
+            total += float(dil)/float(rate)
+    print("%d dilithium @ %f" % (curr, curr/total if not total == 0 else 0))
+
 
 if __name__ == "__main__":
     data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
@@ -162,19 +176,6 @@ if __name__ == "__main__":
     try:
         while True:
             print_stores()
-            curr = 0
-            total = 0
-            for rate, zen in zen_store.items():
-                curr += float(zen)
-                total += float(rate)*float(zen)
-            print("%d Zen @ %f" % (curr, total/curr if not curr == 0 else 0))
-            curr = 0
-            total = 0
-            for rate, dil in dil_store.items():
-                curr += float(dil)
-                if not float(rate) == 0:
-                    total += float(dil)/float(rate)
-            print("%d dilithium @ %f" % (curr, curr/total if not total == 0 else 0))
             try:
                 zen = int(input("How much zen? "))
                 rate = int(input("How much dil per zen? "))
