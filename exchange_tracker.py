@@ -74,12 +74,16 @@ def transact_simple(zen, rate):
 
         # Remember kids, negative zen means negative dilithium!
         for known in sorted(list(dil_store.keys())):
+            # if we have enough dil to eradicate this key, do so
             if dil <= -dil_store[known]:
                 dil += dil_store[known]
                 del dil_store[known]
+            # if not, just clear out dil
             else:
                 dil_store[known] += dil
                 dil = 0
+
+            if dil == 0:
                 break
 
     return True
