@@ -152,19 +152,23 @@ def print_stores():
         stored_value = map(lambda key: str((key, store[key])), sorted(store))
         print(name + ': ' + ' '.join(stored_value))
 
-    curr = 0
-    total = 0
-    for rate, zen in zen_store.items():
-        curr += float(zen)
-        total += float(rate)*float(zen)
-    print("%d Zen @ %f" % (curr, total/curr if not curr == 0 else 0))
-    curr = 0
-    total = 0
-    for rate, dil in dil_store.items():
-        curr += float(dil)
-        if not float(rate) == 0:
-            total += float(dil)/float(rate)
-    print("%d dilithium @ %f" % (curr, curr/total if not total == 0 else 0))
+    total_zen = sum(zen_store.values())
+    dil_value = sum(map(lambda rate: zen_store[rate] * rate,
+                        filter(lambda rate: rate != 0, zen_store)))
+
+    total_dil = sum(dil_store.values())
+    zen_value = sum(map(lambda rate: dil_store[rate] // rate,
+                        filter(lambda rate: rate != 0, dil_store)))
+
+    if total_zen == 0 or dil_value == 0:
+        print("{} dilithium @ 0 each".format(total_zen))
+    else:
+        print("{} Zen @ {} each".format(total_zen, dil_value / total_zen))
+
+    if total_dil == 0 or zen_value == 0:
+        print("{} dilithium @ 0 per Zen".format(total_dil))
+    else:
+        print("{} dilithium @ {} per Zen".format(total_dil, total_dil /zen_value))
 
 
 if __name__ == "__main__":
