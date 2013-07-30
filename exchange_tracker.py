@@ -8,7 +8,7 @@
 #  * You must manually add stipends by buying 500 Zen at a rate of 0.
 #  * Selling Zen at a rate of 0 will remove it from the pool of available Zen.
 
-from __future__ import division
+from __future__ import division, print_function
 
 import os
 from collections import defaultdict
