@@ -189,5 +189,5 @@ if __name__ == "__main__":
             else:
                 print("That didn't work")
 
-    except KeyboardInterrupt:
-        print()
+    except (KeyboardInterrupt, EOFError):
+        pass
