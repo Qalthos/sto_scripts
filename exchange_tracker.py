@@ -51,7 +51,7 @@ def transact_simple(zen, rate):
                     dil -= change * known
                     zen += change
                     zen_store[known] -= change
-            if zen >= 0 or dil == 0:
+            if zen == 0:
                 break
         if dil > rate:
             change = dil // rate
