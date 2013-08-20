@@ -98,7 +98,7 @@ def transact_strict(zen, rate):
     dil = -(zen * rate)
     best = 0
     extra = 0
-
+    
     if zen == 0:
         # nothing happens, but it still succeeds
         return True
@@ -125,14 +125,14 @@ def transact_strict(zen, rate):
 
     elif zen > 0:
         # we are buying zen
-        if (not dil_store) or (dil == 0):
-            zen_store[rate] += zen
-            return True
         for known in sorted(list(dil_store.keys())):
             if rate > known:
                 break
             if dil_store[known]:
                 best = known
+        else:
+            # No existing dil value is less than our rate.
+            best = 0
 
         if (dil_store[best] < -dil) and not (best == 0):
             extra = -(dil + dil_store[best]) // rate
