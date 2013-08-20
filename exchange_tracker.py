@@ -62,8 +62,6 @@ def transact_simple(zen, rate):
         # zen_store[0] gets any leftover (or unpaid) zen
         if zen:
             zen_store[0] += zen
-        if dil:
-            dil_store[0] += dil
 
     elif zen > 0:
         # we are buying zen
