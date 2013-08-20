@@ -42,11 +42,14 @@ def transact_simple(zen, rate):
         # is left to buy with
         for known in sorted(list(zen_store.keys()), reverse=True):
             if dil > known:
+                # We have enough dil to buy back at leas 1 zen @ $known
                 if dil > known * zen_store[known]:
+                    # We can even empty this bucket.
                     dil -= known * zen_store[known]
                     zen += zen_store[known]
                     del zen_store[known]
                 else:
+                    # We can buy back at most ($dil // $known) zen @ $known
                     change = dil // known
                     dil -= change * known
                     zen += change
