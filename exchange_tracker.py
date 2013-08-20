@@ -146,9 +146,8 @@ def print_stores():
     for name, store, func in [('Zen', zen_store, mul),
                               ('dilithium', dil_store, div)]:
         total = sum(store.values())
-        value = sum(map(lambda rate: func(store[rate], rate),
-                        filter(lambda rate: rate != 0, store)))
-        stored_value = map(lambda key: str((key, store[key])), sorted(store))
+        value = sum(func(store[rate], rate) for rate in store if not rate == 0)
+        stored_value = [str(pair) for pair in sorted(store.items())]
 
         if total == 0 or value == 0:
             print("{} {}".format(total, name))
