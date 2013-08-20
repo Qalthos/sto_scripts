@@ -53,14 +53,7 @@ def transact_simple(zen, rate):
                     zen_store[known] -= change
             if zen == 0:
                 break
-        if dil > rate:
-            change = dil // rate
-            zen += change
-            zen_store[0] -= change
-            dil -= rate * change
-
-        # zen_store[0] gets any leftover (or unpaid) zen
-        if zen:
+        else:
             zen_store[0] += zen
 
     elif zen > 0:
