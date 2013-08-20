@@ -147,13 +147,14 @@ def print_stores():
                               ('dilithium', dil_store, div)]:
         total = sum(store.values())
         value = sum(func(store[rate], rate) for rate in store if not rate == 0)
-        stored_value = [str(pair) for pair in sorted(store.items())]
+        stored_values = [str(pair) for pair in sorted(store.items())]
 
         if total == 0 or value == 0:
             print("{} {}".format(total, name))
         else:
-            print("{} {} @ {} each".format(total, name, value / total))
-        print(' '.join(stored_value))
+            dil_per_zen = max(total, value) / min(total, value)
+            print("{} {} @ {} each".format(total, name, dil_per_zen))
+        print(' '.join(stored_values))
 
 
 if __name__ == "__main__":
