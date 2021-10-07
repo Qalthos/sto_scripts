@@ -1,12 +1,14 @@
 #!/usr/bin/env python
-# exchange_tracker.py: A Star Trek Online Dilithium Exchange tracker
-#
-# To use: load your exchange history, and scroll to the bottom
-#
-# Caveats:
-#  * There is no way to add  or remove dilithium to your reserves at present.
-#  * You must manually add stipends by buying 500 Zen at a rate of 0.
-#  * Selling Zen at a rate of 0 will remove it from the pool of available Zen.
+"""
+exchange_tracker.py: A Star Trek Online Dilithium Exchange tracker
+
+To use: load your exchange history, and scroll to the bottom
+
+Caveats:
+ * There is no way to add  or remove dilithium to your reserves at present.
+ * You must manually add stipends by buying 500 Zen at a rate of 0.
+ * Selling Zen at a rate of 0 will remove it from the pool of available Zen.
+"""
 
 from __future__ import division, print_function
 
@@ -15,17 +17,12 @@ from collections import defaultdict
 from datetime import date
 from operator import mul, floordiv as div
 
-zen_store = defaultdict(int)
-dil_store = defaultdict(int)
+zen_store: dict[int, int] = defaultdict(int)
+dil_store: dict[int, int] = defaultdict(int)
 
-# For Python 2.x & 3.x coexistence
-try:
-    input = raw_input
-except:
-    pass
 
-def transact_simple(zen, rate):
-    if (rate < 0):
+def transact_simple(zen: int, rate: int) -> bool:
+    if rate < 0:
         # Dilithium rate cannot be negative
         return False
 
@@ -35,7 +32,7 @@ def transact_simple(zen, rate):
         # we are selling zen
         dil_store[rate] += dil
 
-        if (not zen_store):
+        if not zen_store:
             return True
 
         # Remove (whole number) zen from each bucket until no more dilithium
@@ -83,20 +80,21 @@ def transact_simple(zen, rate):
 
     return True
 
-    
-def transact_strict(zen, rate):
-    if (rate < 0):
+
+def transact_strict(zen: int, rate: int) -> bool:
+    if rate < 0:
         # Dilithium rate cannot be negative
         return False
 
     dil = -(zen * rate)
     best = 0
     extra = 0
-    
+
     if zen == 0:
         # nothing happens, but it still succeeds
         return True
-    elif zen < 0:
+
+    if zen < 0:
         # we are selling zen
         if (not zen_store) or (zen == 0):
             dil_store[rate] += dil
@@ -107,7 +105,7 @@ def transact_strict(zen, rate):
             if zen_store[known]:
                 best = known
 
-        if (zen_store[best] < -zen) and not (best == 0):
+        if (zen_store[best] < -zen) and best != 0:
             extra = zen + zen_store[best]
             zen = -zen_store[best]
             dil = -zen * rate
@@ -128,7 +126,7 @@ def transact_strict(zen, rate):
             # No existing dil value is less than our rate.
             best = 0
 
-        if (dil_store[best] < -dil) and not (best == 0):
+        if (dil_store[best] < -dil) and best != 0:
             extra = -(dil + dil_store[best]) // rate
             dil = -dil_store[best]
             zen = -dil // rate
@@ -142,7 +140,7 @@ def transact_strict(zen, rate):
     return True
 
 
-def print_stores():
+def print_stores() -> None:
     for name, store, func in [('Zen', zen_store, mul),
                               ('dilithium', dil_store, div)]:
         total = sum(store.values())
@@ -157,16 +155,15 @@ def print_stores():
         print(' '.join(stored_values))
 
 
-if __name__ == "__main__":
+def main() -> None:
     data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
-    transact = transact_simple
     if os.path.exists(data_file):
         # Load data contents to dictionaries
         with open(data_file) as data_csv:
             next(data_csv)
             for line in data_csv:
-                zen, dil = line.split(',')[0:2]
-                transact(int(zen), int(dil))
+                zen_in, dil_in = line.split(',')[0:2]
+                transact(int(zen_in), int(dil_in))
     try:
         while True:
             print_stores()
@@ -185,3 +182,8 @@ if __name__ == "__main__":
 
     except (KeyboardInterrupt, EOFError):
         pass
+
+
+if __name__ == "__main__":
+    transact = transact_simple
+    main()
