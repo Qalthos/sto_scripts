@@ -10,23 +10,26 @@ Caveats:
  * Selling Zen at a rate of 0 will remove it from the pool of available Zen.
 """
 
-from __future__ import division, print_function
-
-import os
 from collections import defaultdict
 from datetime import date
-from operator import mul, floordiv as div
+import operator
+import pathlib
 
 zen_store: dict[int, int] = defaultdict(int)
 dil_store: dict[int, int] = defaultdict(int)
 
 
-def transact_simple(zen: int, rate: int) -> bool:
-    if rate < 0:
-        # Dilithium rate cannot be negative
-        return False
+def check(zen: int, rate: int) -> int:
+    if rate == 0:
+        return 0
+    if 25 <= rate <= 500:
+        return -(zen * rate)
+    # Dilithium rate cannot be outside these values
+    return False
 
-    dil = -(zen * rate)
+
+def transact_simple(zen: int, rate: int) -> bool:
+    dil = check(zen, rate)
 
     if zen < 0:
         # we are selling zen
@@ -82,11 +85,7 @@ def transact_simple(zen: int, rate: int) -> bool:
 
 
 def transact_strict(zen: int, rate: int) -> bool:
-    if rate < 0:
-        # Dilithium rate cannot be negative
-        return False
-
-    dil = -(zen * rate)
+    dil = check(zen, rate)
     best = 0
     extra = 0
 
@@ -141,8 +140,10 @@ def transact_strict(zen: int, rate: int) -> bool:
 
 
 def print_stores() -> None:
-    for name, store, func in [('Zen', zen_store, mul),
-                              ('dilithium', dil_store, div)]:
+    for name, store, func in [
+            ('Zen', zen_store, operator.mul),
+            ('dilithium', dil_store, operator.floordiv)
+    ]:
         total = sum(store.values())
         value = sum(func(store[rate], rate) for rate in store if not rate == 0)
         stored_values = [str(pair) for pair in sorted(store.items())]
@@ -156,8 +157,8 @@ def print_stores() -> None:
 
 
 def main() -> None:
-    data_file = os.path.join(os.path.split(__file__)[0], 'history.csv')
-    if os.path.exists(data_file):
+    data_file = pathlib.Path(__file__).with_name('history.csv')
+    if data_file.exists():
         # Load data contents to dictionaries
         with open(data_file) as data_csv:
             next(data_csv)
